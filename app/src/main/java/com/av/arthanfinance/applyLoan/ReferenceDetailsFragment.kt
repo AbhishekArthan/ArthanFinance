@@ -16,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.av.arthanfinance.R
@@ -47,12 +48,15 @@ class ReferenceDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.layout_reference_details, container, false)
+        (activity as UploadKycDetailsActivity).setFormStatus(96)
+
         tvReferenceDetails = view.findViewById(R.id.tv_ref_details)
         btnNext = view.findViewById(R.id.btn_next)
         neighborName = view.findViewById(R.id.edt_name)
@@ -63,7 +67,7 @@ class ReferenceDetailsFragment : Fragment() {
 
         apiClient = ApiClient()
         loanResponse = arguments?.getSerializable("loanResponse") as LoanProcessResponse
-        val paint: TextPaint = tvReferenceDetails.getPaint()
+        val paint: TextPaint = tvReferenceDetails.paint
         val width = paint.measureText("Upload your Aadhaar Card")
 
         val shader = LinearGradient(0f, 0f, width, tvReferenceDetails.textSize, resources.getColor(
@@ -264,6 +268,5 @@ class ReferenceDetailsFragment : Fragment() {
                 }
             })
     }
-
 
 }

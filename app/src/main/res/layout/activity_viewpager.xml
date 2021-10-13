@@ -93,7 +93,7 @@
                         android:id="@+id/tv_progresspercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="23%"
+                        android:text=""
                         android:textSize="14sp"
                         android:layout_marginTop="5dp"
                         android:textColor="#15DA4C"/>

@@ -46,10 +46,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 import android.widget.RadioButton
 
-
-
-
-
 class BusinessDetailsFragment : Fragment() {
     private lateinit var btnNext: Button
     private lateinit var apiClient: ApiClient
@@ -88,6 +84,8 @@ class BusinessDetailsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_business_details, container, false)
+        (activity as UploadKycDetailsActivity).setFormStatus(60)
+
         btnNext = view.findViewById(R.id.btn_next_in_businessDetails)
         constitutionSpiner = view.findViewById(R.id.constitutionSpiner)
         typeSpinner = view.findViewById(R.id.typeSpinner)

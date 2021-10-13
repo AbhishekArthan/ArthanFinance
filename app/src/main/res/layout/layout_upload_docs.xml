@@ -1,16 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/white">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox1"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginTop="16dp"
+        android:text="Account Number"
+        android:textColor="@color/black"
+        android:textSize="16sp"/>
+    <EditText
+        android:id="@+id/etAccNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_grey92_rect"
+        android:ems="10"
+        android:hint="Enter Account No"
+        android:textColor="@color/black"
+        android:inputType="number"
+        android:paddingHorizontal="19dp"
+        android:paddingVertical="11dp"
+        android:textSize="16sp"
+        android:textColorHint="@color/dark_grey" />
+
+    <TextView
+        android:id="@+id/tvIfsc"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginTop="16dp"
+        android:text="IFSC Code"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/etIfsc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_grey92_rect"
+        android:ems="10"
+        android:hint="Enter IFSC Code"
+        android:textColor="@color/black"
+        android:inputType="text"
+        android:paddingHorizontal="19dp"
+        android:paddingVertical="11dp"
+        android:textSize="16sp"
+        android:textColorHint="@color/dark_grey" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="25dp"
+        android:background="@drawable/bg_register_rect_orange"
+        android:gravity="center"
+        android:paddingVertical="10dp"
+        android:text="@string/next"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
     <ScrollView
+        android:id="@+id/bankDetailsLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:fillViewport="true">
         <LinearLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -319,4 +389,4 @@
         </LinearLayout>
     </ScrollView>
 
-</RelativeLayout>
+</LinearLayout>

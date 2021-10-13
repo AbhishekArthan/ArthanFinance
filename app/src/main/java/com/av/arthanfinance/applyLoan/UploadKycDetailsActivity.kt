@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.arthanfinance.core.base.BaseActivity
 import com.arthanfinance.core.util.FiniculeUtil
+import com.av.arthanfinance.CustomerHomeTabResponse
 import com.av.arthanfinance.R
 import com.av.arthanfinance.homeTabs.HomeDashboardActivity
 import com.av.arthanfinance.networkService.ApiClient
@@ -39,12 +40,12 @@ class UploadKycDetailsActivity : BaseActivity(), UploadAdharCardFragment.UpdateL
     private lateinit var progressRegistrationBar: ProgressBar
     private lateinit var registrationProgressPercent: TextView
     private lateinit var tab_viewpager: ViewPager
+    private lateinit var customerData: CustomerHomeTabResponse
     var loanResponse: LoanProcessResponse? = null
     val panCardFragment = UploadPanCardFragment()
     val photoFragment = UploadPhotoFragment()
     val aadharPicFragment = UploadAdharCardFragment()
     val aadharDetailsFragment = AadharDetailsFragment()
-
     val businessDetailsFragment = BusinessDetailsFragment()
     val uploadDocsFragment = UploadDocsFragment()
     val referenceDetailsFragment = ReferenceDetailsFragment()
@@ -59,13 +60,15 @@ class UploadKycDetailsActivity : BaseActivity(), UploadAdharCardFragment.UpdateL
         if (supportActionBar != null)
             supportActionBar?.hide()
 
+        customerData = intent.extras?.get("customerData") as CustomerHomeTabResponse
+
         tab_viewpager = findViewById(R.id.tab_viewpager)
         var tab_tablayout = findViewById<TabLayout>(R.id.tab_tablayout)
         imgBack = findViewById(R.id.img_back)
         progressRegistrationBar = findViewById(R.id.progress_registration)
         registrationProgressPercent = findViewById(R.id.tv_progresspercent)
 
-        val percentCompleted = 23 //to be achieved from BE
+        val percentCompleted = 24 //to be achieved from BE
         progressRegistrationBar.max = 100
         ObjectAnimator.ofInt(progressRegistrationBar, "progress", percentCompleted).setDuration(1000).start()
 
@@ -126,6 +129,12 @@ class UploadKycDetailsActivity : BaseActivity(), UploadAdharCardFragment.UpdateL
         }
     }
 
+    fun setFormStatus(percentCompleted: Int) {
+        progressRegistrationBar.max = 100
+        ObjectAnimator.ofInt(progressRegistrationBar, "progress", percentCompleted).setDuration(1000).start()
+        registrationProgressPercent.text = "${percentCompleted}%"
+    }
+
     override fun onResume() {
         super.onResume()
         if (!FiniculeUtil.isLocationEnabled(this)) {
@@ -139,9 +148,16 @@ class UploadKycDetailsActivity : BaseActivity(), UploadAdharCardFragment.UpdateL
     }
 
     override fun onBackPressed() {
+
         val currentPosition: Int = tab_viewpager.currentItem
-        if (currentPosition != 0) {
-            tab_viewpager.currentItem = 0
+        if (currentPosition == 6) {
+            if (loanResponse?.applicantType == "PA"){
+                val intent1 = Intent(this, InitiateApplyLoanActivity::class.java)
+                intent1.putExtra("isCreateFlow",true)
+                intent1.putExtra("customerData", customerData)
+                startActivity(intent1)
+            }
+            //tab_viewpager.currentItem = 0
         } else {
             super.onBackPressed()
         }

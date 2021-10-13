@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.text.TextPaint
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,8 @@ import com.av.arthanfinance.models.CustomerBankDetailsResponse
 import com.av.arthanfinance.networkService.ApiClient
 import com.av.arthanfinance.util.ArthanFinConstants
 import com.google.gson.JsonObject
+import kotlinx.android.synthetic.main.activity_demo.*
+import kotlinx.android.synthetic.main.layout_upload_docs.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -74,8 +77,10 @@ class UploadDocsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.layout_upload_docs, container, false)
+        (activity as UploadKycDetailsActivity).setFormStatus(72)
+
         tvUploadAdhar = view.findViewById(R.id.tv_upload_docs)
-        btnNext = view.findViewById(R.id.btn_next)
+        btnNext = view.findViewById(R.id.btnNext)
         uploadDocButton = view.findViewById(R.id.btn_upload)
         btnMoreBankDocs = view.findViewById(R.id.btn_more)
         loanResponse = arguments?.getSerializable("loanResponse") as LoanProcessResponse
@@ -83,8 +88,8 @@ class UploadDocsFragment : Fragment() {
         btnCancel = view.findViewById(R.id.btn_cancel)
         editTextBankName = view.findViewById(R.id.edt_bank_name)
         editTextBankAccountName = view.findViewById(R.id.edt_acc_name)
-        editTextAccountNo = view.findViewById(R.id.edt_acc_no)
-        editTextIFSCCode = view.findViewById(R.id.edt_ifsc)
+        editTextAccountNo = view.findViewById(R.id.etAccNo)
+        editTextIFSCCode = view.findViewById(R.id.etIfsc)
         editTextReEnterAccountNo = view.findViewById(R.id.edt_re_acc_no)
         val paint: TextPaint = tvUploadAdhar.getPaint()
         val width = paint.measureText("Upload your Aadhaar Card")
@@ -140,7 +145,19 @@ class UploadDocsFragment : Fragment() {
 
         btnNext.setOnClickListener{
             if (isCreateFlow!!) {
-                saveBankAccountDetails()
+                val ifsc = etIfsc.text.toString()
+                val accountNumber = etAccNo.text.toString()
+
+                if (ifsc.equals("")) {
+                    Toast.makeText(activity, "Please Enter Your IFSC Code", Toast.LENGTH_SHORT).show()
+                } else if (accountNumber.equals("")) {
+                    Toast.makeText(activity, "Please Enter Your Bank Account Number", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    getBankDetailsFromDigio(ifsc.toString(), accountNumber.toString())
+                }
+
+                //saveBankAccountDetails()
             }else{
                 (activity as UploadKycDetailsActivity?)?.selectIndex(6)
             }
@@ -153,6 +170,46 @@ class UploadDocsFragment : Fragment() {
         actualFile?.let {
             uploadFile(actualFile!!,loanResponse!!.loanId!!,loanResponse!!.customerId!!)
         }
+    }
+
+    private fun getBankDetailsFromDigio(ifscCode: String, accountNumber: String) {
+        val jsonObject = JsonObject()
+        var accountHolderName = ""
+        jsonObject.addProperty("beneficiary_account_no", accountNumber)
+        jsonObject.addProperty("beneficiary_ifsc", ifscCode)
+
+        val clientId = "AIV9X8IU1LYFM9RE7EKINUO98RE6MX6L"
+        val clientSecret = "FJ872EVIBCC11XJE1HR3KAZRK2ZU4O5P"
+
+        val base = clientId + ":" + clientSecret
+
+        val authHeader = "Basic " + Base64.encodeToString(base.toByteArray(), Base64.NO_WRAP)
+
+        ApiClient().getBankDetailsApiService(activity as UploadKycDetailsActivity).verifyBank(authHeader, jsonObject)
+            .enqueue(object :
+                Callback<BankDetilsResponse> {
+                override fun onResponse(
+                    call: Call<BankDetilsResponse>,
+                    response: Response<BankDetilsResponse>
+                ) {
+                    val bankAccountResponse = response.body() as BankDetilsResponse
+                    val verified = bankAccountResponse.verified
+                    if (verified) {
+                        accountHolderName = bankAccountResponse.name
+                    }
+                    saveBankAccountDetails(accountHolderName, accountNumber, ifscCode)
+                    Toast.makeText(activity, "" + verified, Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onFailure(call: Call<BankDetilsResponse>, t: Throwable) {
+                    t.printStackTrace()
+                    Toast.makeText(
+                        activity,
+                        "Service Failure, Once Network connection is stable, will try to resend again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
     }
 
     private fun getBankAccountDetails() {
@@ -196,9 +253,13 @@ class UploadDocsFragment : Fragment() {
         return IFSCCode_Patter.matcher(ifscCode).matches()
     }
 
-    private fun saveBankAccountDetails() {
+    private fun saveBankAccountDetails(
+        accountHolderName: String,
+        accountNumber: String,
+        ifscCode: String
+    ) {
 
-        if (editTextBankName.text.toString().isEmpty()){
+        /*if (editTextBankName.text.toString().isEmpty()){
             Toast.makeText(editTextAccountNo.context, "Bank Name is Empty", Toast.LENGTH_SHORT).show()
             return
         }else if (editTextBankAccountName.text.toString().isEmpty()){
@@ -222,15 +283,21 @@ class UploadDocsFragment : Fragment() {
         if (!checkIFSCCode(editTextIFSCCode.text.toString())){
             Toast.makeText(editTextAccountNo.context, "IFSC code Invalid", Toast.LENGTH_SHORT).show()
             return
-        }
+        }*/
         (activity as UploadKycDetailsActivity).showProgressDialog()
 
         val jsonObject = JsonObject()
-        jsonObject.addProperty("loanId", loanResponse?.loanId)
+        /*jsonObject.addProperty("loanId", loanResponse?.loanId)
         jsonObject.addProperty("accountName", editTextBankAccountName.text.toString())
         jsonObject.addProperty("accountNo", editTextAccountNo.text.toString())
         jsonObject.addProperty("bankName", editTextBankName.text.toString())
-        jsonObject.addProperty("ifscCode", editTextIFSCCode.text.toString())
+        jsonObject.addProperty("ifscCode", editTextIFSCCode.text.toString())*/
+
+        jsonObject.addProperty("loanId", loanResponse?.loanId)
+        jsonObject.addProperty("accountName", accountHolderName)
+        jsonObject.addProperty("accountNo", accountNumber)
+        jsonObject.addProperty("bankName", "SBI")
+        jsonObject.addProperty("ifscCode", ifscCode)
 
         val context = activity?.applicationContext
         if (context != null) {

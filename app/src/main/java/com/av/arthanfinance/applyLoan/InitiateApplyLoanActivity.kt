@@ -44,7 +44,6 @@ class InitiateApplyLoanActivity : BaseActivity() {
     private lateinit var apiClient: ApiClient
     private lateinit var customerData: CustomerHomeTabResponse
     private var tenureList = arrayOf("6 Months","12 Months", "18 Months","24 Months")
-
     var MIN = 30000
     var MAX = 100000
     var STEP = 5000
@@ -93,9 +92,9 @@ class InitiateApplyLoanActivity : BaseActivity() {
 
         } )
 
-        val isCreateFlow = intent.getBooleanExtra(IS_CREATE_FLOW,false)
+        var isCreateFlow = intent.getBooleanExtra(IS_CREATE_FLOW,false)
 
-        val percentCompleted = 23 //to be achieved from BE
+        val percentCompleted = 12 //to be achieved from BE
         progress_loan.max = 100
         ObjectAnimator.ofInt(progress_loan, "progress", percentCompleted).setDuration(1000).start()
         tv_progresspercent.text = "${percentCompleted}%"
@@ -157,7 +156,7 @@ class InitiateApplyLoanActivity : BaseActivity() {
                     val intent1 = Intent(this@InitiateApplyLoanActivity, UploadKycDetailsActivity::class.java)
                     intent1.putExtra("loanResponse",it)
                     intent1.putExtra(ArthanFinConstants.IS_CREATE_FLOW,false)
-                    intent1.putExtra("customerData",intent.getSerializableExtra("customerData"))
+                    intent1.putExtra("customerData", customerData)
                     startActivity(intent1)
                 }
             }
@@ -395,6 +394,7 @@ class InitiateApplyLoanActivity : BaseActivity() {
             loanResponse.applicantType = "CA"
         }
         intent.putExtra("loanResponse", loanResponse)
+        intent.putExtra("customerData", customerData)
         startActivity(intent)
     }
 }

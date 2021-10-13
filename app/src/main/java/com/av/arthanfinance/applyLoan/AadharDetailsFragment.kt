@@ -48,6 +48,8 @@ class AadharDetailsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_aadhar_details, container, false)
+        (activity as UploadKycDetailsActivity).setFormStatus(48)
+
         btnNext = view.findViewById(R.id.btn_next_in_aadhar_details)
         stateDropDown = view.findViewById(R.id.stateDropDown)
         //cityDropDown = view.findViewById(R.id.cityDropDown)
@@ -139,7 +141,7 @@ class AadharDetailsFragment : Fragment() {
     }
 
     fun loadAddressData(loanResponse: LoanProcessResponse) {
-        val isCreateFlow = arguments?.getBoolean(ArthanFinConstants.IS_CREATE_FLOW,false)
+        /*val isCreateFlow = arguments?.getBoolean(ArthanFinConstants.IS_CREATE_FLOW,false)
         if (!isCreateFlow!!){
             return
         }
@@ -147,7 +149,10 @@ class AadharDetailsFragment : Fragment() {
         val data = fullAddress?.split(",", 2.toString())?.toTypedArray()
         val add1 = data!![0] + "," + data[1] + "," + data[2] + "," + data[3]
         val add2 =  data[4] + "," + data[5]
-        val add3 =  data[6] + "," + data[7]
+        val add3 =  data[6] + "," + data[7]*/
+        val add1 = loanResponse.addressLine1
+        val add2 = loanResponse.addressLine2
+        val add3 = loanResponse.addressLine3
 
         address1.setText(add1)
         address2.setText(add2)

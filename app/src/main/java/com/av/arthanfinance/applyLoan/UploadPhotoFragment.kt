@@ -67,6 +67,7 @@ class UploadPhotoFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.layout_upload_photo, container, false)
         apiClient = ApiClient()
+        (activity as UploadKycDetailsActivity).setFormStatus(24)
         tvUploadPhoto = view.findViewById(R.id.tv_upload_photo)
         btnNext = view.findViewById(R.id.btn_next_in_uploadPhoto)
         btncamera = view.findViewById(R.id.btn_camera_uploadPhoto)
